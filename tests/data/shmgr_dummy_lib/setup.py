@@ -8,5 +8,5 @@ setup(
     include_package_data=True,
     install_requires="shmgr",
     name="shmgr-dummy-lib",
-    package_data={"shmgr_dummy_lib.data.dummy": "*.sh"},
+    package_data={"shmgr_dummy_lib.data.dummy": ["*.sh"]},
 )
