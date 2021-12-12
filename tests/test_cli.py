@@ -45,7 +45,7 @@ def test_first_load(cache_dir: Path, capsys: CaptureFixture) -> None:
         cache_dir.rglob("*")
     ), "The fake cache directory should initially be empty."
 
-    assert cli.main(["", "load", f"--cache-dir={cache_dir}", "test:3"]) == 0
+    assert cli.main(["", "load", "test:3"]) == 0
 
     captured = capsys.readouterr()
     test_lib_contents = read_text("shmgr_test_lib.data", "3.0.0.sh")
@@ -85,7 +85,7 @@ def test_cached_load(cache_dir: Path, capsys: CaptureFixture) -> None:
     v1_foo_lib_path.parent.mkdir(parents=True)
     v1_foo_lib_path.write_text(foo_lib_contents)
 
-    assert cli.main(["", "load", f"--cache-dir={cache_dir}", "foo:1"]) == 0
+    assert os.system("shmgr load foo:1") == 0
 
     captured = capsys.readouterr()
     assert captured.out == foo_lib_contents, (
