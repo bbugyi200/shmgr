@@ -62,3 +62,5 @@ def run(args: Arguments) -> int:
 
 
 main = clap.main_factory(parse_cli_args, run)
+if __name__ == "__main__":
+    main()

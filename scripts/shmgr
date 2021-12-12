@@ -1,0 +1,74 @@
+#!/bin/bash
+
+#################################################################################
+# A thin shell wrapper around shmgr's main Python interface.
+#
+# Used primarily to speed up sequential loads of the same library (since just
+# having to load the Python interpretter into memory is enough to cause a few
+# second delay on some machines).
+#################################################################################
+
+SCRIPTNAME="$(basename "$0")"
+
+function run() {
+    local is_load_cmd=false
+    local shell_lib_specs=()
+    for opt in "$@"; do
+        if [[ "${opt}" == "-"* ]]; then
+            continue
+        fi
+
+        if [[ "${is_load_cmd}" == true ]]; then
+            shell_lib_specs+=("${opt}")
+        elif [[ "${opt}" == "load" ]]; then
+            is_load_cmd=true
+        fi
+    done
+
+    if [[ "${is_load_cmd}" == true ]]; then
+        if ! load_libs_from_cache_dir "${shell_lib_specs[@]}"; then
+            shmgr_wrapper "$@"
+        fi
+    else
+        shmgr_wrapper "$@"
+    fi
+}
+
+function load_libs_from_cache_dir() {
+    local cached_lib_files=()
+    local cache_dir="$(get_cache_dir)"
+
+    for shell_lib_spec in "$@"; do
+        local lib_name="$(get_lib_name "${shell_lib_spec}")"
+        local lib_version="$(get_lib_version "${shell_lib_spec}")"
+        local found_match=false
+
+        local this_libs_cache_dir="${cache_dir}"/"${lib_name}"
+        for full_fname in "${this_libs_cache_dir}"/*; do
+            if [[ "${full_fname[0]}" != "${lib_name[0]}" ]]; then
+                continue
+            fi
+
+            local base_fname="$(basename "${full_fname}")"
+            if version_gt "${lib_version}" "${base_fname}"; then
+                cached_lib_files+=("${full_fname}")
+                found_match=true
+                break
+            fi
+        done
+
+        if [[ "${found_match}" != true ]]; then
+            return 1
+        fi
+    done
+
+    cat "${cached_lib_files[@]}"
+}
+
+function get_cache_dir() { echo "${SHMGR_CACHE_DIR:-"${XDG_CACHE_DIR:-"${HOME}"/.cache/shmgr}"}"; }
+function shmgr_wrapper() { XDG_CACHE_DIR="${SHMGR_CACHE_DIR:-"${XDG_CACHE_DIR:-}"}" python -m shmgr.cli "$@"; }
+function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+
+if [[ "${SCRIPTNAME}" == "$(basename "${BASH_SOURCE[0]}")" ]]; then
+    run "$@"
+fi

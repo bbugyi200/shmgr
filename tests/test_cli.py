@@ -1,15 +1,37 @@
 """Integration tests for the `shmgr` tool."""
 
 from importlib.resources import read_text
+import os
 from pathlib import Path
 from textwrap import dedent
+from typing import Final, Iterator
 
 from _pytest.capture import CaptureFixture
+from pytest import fixture
 
 from shmgr import cli
 
 
-def test_first_load(tmp_path: Path, capsys: CaptureFixture) -> None:
+CACHE_DIR_ENVVAR: Final = "SHMGR_CACHE_DIR"
+
+
+@fixture(name="cache_dir")
+def cache_dir_fixture(tmp_path: Path) -> Iterator[Path]:
+    result = tmp_path / "cache"
+    result.mkdir()
+
+    old_shmgr_cache_dir = os.getenv(CACHE_DIR_ENVVAR)
+    os.environ[CACHE_DIR_ENVVAR] = str(result)
+
+    yield result
+
+    if old_shmgr_cache_dir is not None:
+        os.environ[CACHE_DIR_ENVVAR] = old_shmgr_cache_dir
+    else:
+        del os.environ[CACHE_DIR_ENVVAR]
+
+
+def test_first_load(cache_dir: Path, capsys: CaptureFixture) -> None:
     """Tests that we can load a shell library for the first time.
 
     The library should be able to be successfully loaded AND should be cached
@@ -19,8 +41,6 @@ def test_first_load(tmp_path: Path, capsys: CaptureFixture) -> None:
     plugin client for this package) being listed in this project's development
     requirements.
     """
-    cache_dir = tmp_path / "cache"
-    cache_dir.mkdir()
     assert not list(
         cache_dir.rglob("*")
     ), "The fake cache directory should initially be empty."
@@ -49,10 +69,8 @@ def test_first_load(tmp_path: Path, capsys: CaptureFixture) -> None:
     )
 
 
-def test_cached_load(tmp_path: Path, capsys: CaptureFixture) -> None:
+def test_cached_load(cache_dir: Path, capsys: CaptureFixture) -> None:
     """Tests that we load cached shell libraries properly."""
-    cache_dir = tmp_path / "cache"
-
     foo_lib_contents = dedent(
         """
         #!/bin/bash
