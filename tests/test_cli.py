@@ -88,7 +88,7 @@ def test_cached_load(cache_dir: Path) -> None:
             echo "KUNG FOOOOOO!"
         }
     """
-    )
+    ).strip()
 
     v1_foo_lib_path = cache_dir / "foo/1.2.3.sh"
     v1_foo_lib_path.parent.mkdir(parents=True)
