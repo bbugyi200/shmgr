@@ -5,7 +5,11 @@ from typing import Tuple
 from shmgr.plugin import hookimpl
 
 
+VERSION = "3.0.0"
+
+
 @hookimpl
 def register_shell_libs() -> Tuple[str, str, Tuple[int, int, int]]:
     """We register the dummy shell library using this hook implementation."""
-    return ("shmgr_dummy_lib", "dummy", (3, 0, 0))
+    major, minor, patch = [int(v) for v in VERSION.split(".")]
+    return ("shmgr_dummy_lib", "dummy", (major, minor, patch))
