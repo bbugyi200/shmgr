@@ -2,3 +2,4 @@ pluggy ~= 1.0
 pydantic
 pylogutils
 python-clap
+typing-extensions ~= 4.0 ; python_version < '3.8'
