@@ -2,6 +2,7 @@
 pytest
 pytest-cov
 pytest-mock
+shmgr-test-lib == 3.0.0
 syrupy
 tox
 tox-pyenv

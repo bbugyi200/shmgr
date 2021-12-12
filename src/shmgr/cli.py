@@ -3,20 +3,20 @@
 This tool is primarily used to dynamically source bash libraries.
 
 Examples:
-    # Load v1.* of the "foo.sh" shell library...
-    eval "$(shmgr load foo.sh:1)"
+    # Load v1.* of the "foo" shell library...
+    eval "$(shmgr load foo:1)"
 
-    # Load v2.* of the "foo.sh" shell library. Exit with a non-zero exit code
+    # Load v2.* of the "foo" shell library. Exit with a non-zero exit code
     # if no version >=2.0.0 can be found...
-    eval "$(shmgr load foo.sh:2)"
+    eval "$(shmgr load foo:2)"
 
-    # Load v2.* of the "foo.sh" shell library. Exit with a non-zero exit
+    # Load v2.* of the "foo" shell library. Exit with a non-zero exit
     # code if no version >=2.1.0 can be found...
-    eval "$(shmgr load foo.sh:2.1)"
+    eval "$(shmgr load foo:2.1)"
 
-    # Load v3.* of the "bar.sh" shell library. Exit with a non-zero exit code
+    # Load v3.* of the "bar" shell library. Exit with a non-zero exit code
     # if no version >=3.2.1 can be found...
-    eval "$(shmgr load bar.sh:3.2.1)"
+    eval "$(shmgr load bar:3.2.1)"
 
     # List all available shell libraries...
     shmgr list
