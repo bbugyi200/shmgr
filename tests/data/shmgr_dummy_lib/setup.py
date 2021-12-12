@@ -9,4 +9,5 @@ setup(
     install_requires="shmgr",
     name="shmgr-dummy-lib",
     package_data={"shmgr_dummy_lib.data.dummy": ["*.sh"]},
+    version="3.0.0",
 )

@@ -3,6 +3,7 @@
 from importlib.resources import read_text
 import os
 from pathlib import Path
+import subprocess as sp
 from textwrap import dedent
 from typing import Iterator
 
@@ -54,7 +55,7 @@ def test_first_load(
         cache_dir.rglob("*")
     ), "The fake cache directory should initially be empty."
 
-    assert cli.main(["", "load", "test:3"]) == 0
+    assert cli.main(["", "load", "dummy:3"]) == 0
 
     captured = capsys.readouterr()
     assert captured.out == dummy_lib_contents, (
@@ -77,7 +78,7 @@ def test_first_load(
     )
 
 
-def test_cached_load(cache_dir: Path, capsys: CaptureFixture) -> None:
+def test_cached_load(cache_dir: Path) -> None:
     """Tests that we load cached shell libraries properly."""
     foo_lib_contents = dedent(
         """
@@ -95,8 +96,10 @@ def test_cached_load(cache_dir: Path, capsys: CaptureFixture) -> None:
 
     assert os.system("shmgr load foo:1") == 0
 
-    captured = capsys.readouterr()
-    assert captured.out == foo_lib_contents, (
+    popen = sp.Popen(["shmgr", "load", "foo:1"], stdout=sp.PIPE)
+    stdout, _stderr = popen.communicate()
+
+    assert stdout.decode().strip() == foo_lib_contents, (
         "The `shmgr load foo:1` command should output the cached contents of"
         " v1.* of the 'foo' shell library."
     )
