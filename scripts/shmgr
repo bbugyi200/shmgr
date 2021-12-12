@@ -14,6 +14,12 @@ function run() {
     local is_load_cmd=false
     local shell_lib_specs=()
     for opt in "$@"; do
+        if [[ "${opt}" == "-vv"* ]]; then
+            shift
+            PS4='$LINENO: '
+            set -x
+        fi
+
         if [[ "${opt}" == "-"* ]]; then
             continue
         fi
@@ -25,11 +31,7 @@ function run() {
         fi
     done
 
-    if [[ "${is_load_cmd}" == true ]]; then
-        if ! load_libs_from_cache_dir "${shell_lib_specs[@]}"; then
-            shmgr_wrapper "$@"
-        fi
-    else
+    if [[ "${is_load_cmd}" != true ]] || ! load_libs_from_cache_dir "${shell_lib_specs[@]}"; then
         shmgr_wrapper "$@"
     fi
 }
@@ -45,12 +47,12 @@ function load_libs_from_cache_dir() {
 
         local this_libs_cache_dir="${cache_dir}"/"${lib_name}"
         for full_fname in "${this_libs_cache_dir}"/*; do
-            if [[ "${full_fname[0]}" != "${lib_name[0]}" ]]; then
+            local base_fname="$(basename "${full_fname}")"
+            if [[ "${base_fname:0:1}" != "${lib_version:0:1}" ]]; then
                 continue
             fi
 
-            local base_fname="$(basename "${full_fname}")"
-            if version_gt "${lib_version}" "${base_fname}"; then
+            if version_gte "${base_fname}" "${lib_version}"; then
                 cached_lib_files+=("${full_fname}")
                 found_match=true
                 break
@@ -65,9 +67,38 @@ function load_libs_from_cache_dir() {
     cat "${cached_lib_files[@]}"
 }
 
+function get_lib_version() {
+    local spec="$1"
+    shift
+
+    local ver="${spec##*:}"
+    if ! str_contains_dot "${ver}"; then
+        result="${ver}".0.0
+    elif ! str_contains_dot "${ver%.*}"; then
+        result="${ver}".0
+    else
+        result="${ver}"
+    fi
+
+    echo "${result}"
+}
+
+function version_gte() {
+    if [[ "$1" == "$2" ]]; then
+        return 0
+    fi
+
+    if [[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
 function get_cache_dir() { echo "${SHMGR_CACHE_DIR:-"${XDG_CACHE_DIR:-"${HOME}"/.cache/shmgr}"}"; }
+function get_lib_name() { echo "${1%%:*}"; }
 function shmgr_wrapper() { XDG_CACHE_DIR="${SHMGR_CACHE_DIR:-"${XDG_CACHE_DIR:-}"}" python -m shmgr.cli "$@"; }
-function version_gt() { test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; }
+function str_contains_dot() { echo "$1" | grep -q "\."; }
 
 if [[ "${SCRIPTNAME}" == "$(basename "${BASH_SOURCE[0]}")" ]]; then
     run "$@"
