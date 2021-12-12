@@ -101,11 +101,6 @@ setup(
         for pretty_pyver in PRETTY_PYTHON_VERSIONS
     ],
     description=DESCRIPTION,
-    entry_points={
-        "console_scripts": [
-            "shmgr = shmgr:main",
-        ]
-    },
     include_package_data=True,
     install_requires=install_requires(),
     license="MIT license",
