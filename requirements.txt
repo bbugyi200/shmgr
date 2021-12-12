@@ -11,7 +11,11 @@ bugyi.lib==0.10.0
 colorama==0.4.4
     # via pylogutils
 importlib-metadata==4.8.2
-    # via python-clap
+    # via
+    #   pluggy
+    #   python-clap
+pluggy==1.0.0
+    # via -r requirements.in
 pydantic==1.8.2
     # via
     #   -r requirements.in

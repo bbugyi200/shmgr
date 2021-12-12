@@ -134,6 +134,7 @@ platformdirs==2.4.0
     #   virtualenv
 pluggy==1.0.0
     # via
+    #   -r requirements.in
     #   pytest
     #   tox
 poyo==0.5.0
