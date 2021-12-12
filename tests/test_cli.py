@@ -38,7 +38,7 @@ def dummy_lib_setup() -> str:
     this_dir = Path(__file__).resolve().parent
     ec = os.system(f"python -m pip install -e {this_dir}/data/shmgr_dummy_lib")
     assert ec == 0, "Failed to install 'dummy' shell library."
-    result = read_text("shmgr_dummy_lib.data", "3.0.0.sh")
+    result = read_text("shmgr_dummy_lib.data.dummy", "latest.sh")
     return result
 
 
