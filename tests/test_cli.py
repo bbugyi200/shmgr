@@ -4,7 +4,7 @@ from importlib.resources import read_text
 import os
 from pathlib import Path
 from textwrap import dedent
-from typing import Final, Iterator
+from typing import Iterator
 
 from _pytest.capture import CaptureFixture
 from pytest import fixture
@@ -12,11 +12,12 @@ from pytest import fixture
 from shmgr import cli
 
 
-CACHE_DIR_ENVVAR: Final = "SHMGR_CACHE_DIR"
+CACHE_DIR_ENVVAR = "SHMGR_CACHE_DIR"
 
 
 @fixture(name="cache_dir")
 def cache_dir_fixture(tmp_path: Path) -> Iterator[Path]:
+    """Setup a temp cache dir to be used with tests."""
     result = tmp_path / "cache"
     result.mkdir()
 
@@ -31,15 +32,23 @@ def cache_dir_fixture(tmp_path: Path) -> Iterator[Path]:
         del os.environ[CACHE_DIR_ENVVAR]
 
 
-def test_first_load(cache_dir: Path, capsys: CaptureFixture) -> None:
+@fixture(name="dummy_lib_contents")
+def dummy_lib_setup() -> str:
+    """Install dummy plugin client to be used with tests."""
+    this_dir = Path(__file__).resolve().parent
+    ec = os.system(f"python -m pip install -e {this_dir}/data/shmgr_dummy_lib")
+    assert ec == 0, "Failed to install 'dummy' shell library."
+    result = read_text("shmgr_dummy_lib.data", "3.0.0.sh")
+    return result
+
+
+def test_first_load(
+    dummy_lib_contents: str, cache_dir: Path, capsys: CaptureFixture
+) -> None:
     """Tests that we can load a shell library for the first time.
 
     The library should be able to be successfully loaded AND should be cached
     for later.
-
-    WARNING: This test depends on the shmgr-test-lib package (which is a test
-    plugin client for this package) being listed in this project's development
-    requirements.
     """
     assert not list(
         cache_dir.rglob("*")
@@ -48,8 +57,7 @@ def test_first_load(cache_dir: Path, capsys: CaptureFixture) -> None:
     assert cli.main(["", "load", "test:3"]) == 0
 
     captured = capsys.readouterr()
-    test_lib_contents = read_text("shmgr_test_lib.data", "3.0.0.sh")
-    assert captured.out == test_lib_contents, (
+    assert captured.out == dummy_lib_contents, (
         "The `shmgr load test:3` command should output the contents of version"
         " 3.0.0 of the 'test' shell library."
     )
@@ -63,7 +71,7 @@ def test_first_load(cache_dir: Path, capsys: CaptureFixture) -> None:
     )
 
     v3_lib_path = cache_dir / "test/3.0.0.sh"
-    assert v3_lib_path.read_text() == test_lib_contents, (
+    assert v3_lib_path.read_text() == dummy_lib_contents, (
         "The test/3.0.0.sh file should contain the cached contents of version"
         " 3.0.0 of the 'test' shell library."
     )
