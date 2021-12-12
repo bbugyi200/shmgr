@@ -11,7 +11,7 @@
 SCRIPTNAME="$(basename "$0")"
 
 function run() {
-    local is_load_cmd=false
+    local is_loadable_from_cache=false
     local shell_lib_specs=()
     for opt in "$@"; do
         if [[ "${opt}" == "-vv"* ]]; then
@@ -21,22 +21,27 @@ function run() {
         fi
 
         if [[ "${opt}" == "-"* ]]; then
-            continue
+            if [[ "${is_loadable_from_cache}" == true ]]; then
+                is_loadable_from_cache=false
+                break
+            else
+                continue
+            fi
         fi
 
-        if [[ "${is_load_cmd}" == true ]]; then
+        if [[ "${is_loadable_from_cache}" == true ]]; then
             shell_lib_specs+=("${opt}")
         elif [[ "${opt}" == "load" ]]; then
-            is_load_cmd=true
+            is_loadable_from_cache=true
         fi
     done
 
-    if [[ "${is_load_cmd}" != true ]] || ! load_libs_from_cache_dir "${shell_lib_specs[@]}"; then
+    if [[ "${is_loadable_from_cache}" != true ]] || ! load_libs_from_cache "${shell_lib_specs[@]}"; then
         shmgr_wrapper "$@"
     fi
 }
 
-function load_libs_from_cache_dir() {
+function load_libs_from_cache() {
     local cached_lib_files=()
     local cache_dir="$(get_cache_dir)"
 
