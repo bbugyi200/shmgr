@@ -92,14 +92,23 @@ function get_lib_version() {
 }
 
 function version_gte() {
-    if [[ "$1" == "$2" ]]; then
+    local V1="$1"
+    shift
+
+    local V2="$1"
+    shift
+
+    # If V1 is the same as V2...
+    if [[ "${V1}" == "${V2}" ]]; then
         return 0
     fi
 
-    if [[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" ]]; then
+    # If V1 is greater than V2...
+    if [[ "$(printf '%s\n' "${V1}" "${V2}" | sort -V | head -n 1)" != "${V1}" ]]; then
         return 0
     fi
 
+    # Otherwise, V2 is greater than V1...
     return 1
 }
 
