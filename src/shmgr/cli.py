@@ -28,6 +28,8 @@ Examples:
     shmgr list
 """
 
+from __future__ import annotations
+
 from importlib.resources import read_text
 from typing import Sequence
 
