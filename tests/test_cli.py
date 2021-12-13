@@ -41,11 +41,12 @@ def cache_dir_fixture(tmp_path: Path) -> Iterator[Path]:
 @fixture(name="dummy_lib_contents")
 def dummy_lib_setup() -> Iterator[str]:
     """Install dummy plugin client to be used with tests."""
-    TEXT_STATUS = "<<<<<   {}   >>>>>     ".format
+    text_status_fmt = "<<<<<   {}   >>>>>     ".format
+
     this_dir = Path(__file__).resolve().parent
     with console.status(
         Text(
-            TEXT_STATUS("PIP INSTALL SHMGR_DUMMY_LIB......."),
+            text_status_fmt("PIP INSTALL SHMGR_DUMMY_LIB......."),
             style="bold #004e00",
         )
     ):
