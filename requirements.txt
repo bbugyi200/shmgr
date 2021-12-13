@@ -35,9 +35,8 @@ six==1.16.0
     # via python-dateutil
 structlog==21.4.0
     # via pylogutils
-typing-extensions==4.0.1 ; python_version < "3.8"
+typing-extensions==4.0.1
     # via
-    #   -r requirements.in
     #   bugyi.lib
     #   importlib-metadata
     #   pydantic

@@ -268,9 +268,8 @@ typeguard==2.13.3
     # via -r requirements-dev.in
 typer==0.4.0
     # via cruft
-typing-extensions==4.0.1 ; python_version < "3.8"
+typing-extensions==4.0.1
     # via
-    #   -r requirements.in
     #   arrow
     #   astroid
     #   black
