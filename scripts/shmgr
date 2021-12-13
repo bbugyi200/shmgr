@@ -78,6 +78,7 @@ function get_lib_version() {
     local spec="$1"
     shift
 
+    local result  # will be set in the next code block...
     local ver="${spec##*:}"
     if ! str_contains_dot "${ver}"; then
         result="${ver}".0.0
