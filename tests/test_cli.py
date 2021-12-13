@@ -67,7 +67,9 @@ def dummy_lib_setup() -> Iterator[str]:
             style="bold #ff9500",
         )
     ):
-        popen = sp.Popen("python -m pip uninstall -y shmgr_dummy_lib", shell=True)
+        popen = sp.Popen(
+            "python -m pip uninstall -y shmgr_dummy_lib", shell=True
+        )
         popen.communicate()
         ec = popen.returncode
         assert ec == 0, "Failed to uninstall 'dummy' shell library."
