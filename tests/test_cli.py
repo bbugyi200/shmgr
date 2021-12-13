@@ -11,13 +11,14 @@ from _pytest.capture import CaptureFixture
 from pytest import fixture
 from rich.console import Console
 from rich.text import Text
+from typing_extensions import Final
 
 from shmgr import cli
 
 
 console = Console(stderr=True)
 
-CACHE_DIR_ENVVAR = "SHMGR_CACHE_DIR"
+CACHE_DIR_ENVVAR: Final = "SHMGR_CACHE_DIR"
 
 
 @fixture(name="cache_dir")
