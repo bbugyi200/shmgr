@@ -21,7 +21,9 @@ function run() {
         fi
 
         if [[ "${opt}" == "-"* ]]; then
+            # If the `shmgr load` command has options...
             if [[ "${is_loadable_from_cache}" == true ]]; then
+                # Then we run the Python version of shmgr...
                 is_loadable_from_cache=false
                 break
             else
