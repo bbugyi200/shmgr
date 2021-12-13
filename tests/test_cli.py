@@ -9,11 +9,14 @@ from typing import Iterator
 
 from _pytest.capture import CaptureFixture
 from pytest import fixture
+from rich.console import Console
+from rich.text import Text
 
 from shmgr import cli
 
 
 CACHE_DIR_ENVVAR = "SHMGR_CACHE_DIR"
+console = Console(stderr=True)
 
 
 @fixture(name="cache_dir")
@@ -34,13 +37,36 @@ def cache_dir_fixture(tmp_path: Path) -> Iterator[Path]:
 
 
 @fixture(name="dummy_lib_contents")
-def dummy_lib_setup() -> str:
+def dummy_lib_setup() -> Iterator[str]:
     """Install dummy plugin client to be used with tests."""
+    TEXT_STATUS = "<<<<<   {}   >>>>>     ".format
     this_dir = Path(__file__).resolve().parent
-    ec = os.system(f"python -m pip install -e {this_dir}/data/shmgr_dummy_lib")
-    assert ec == 0, "Failed to install 'dummy' shell library."
+    with console.status(
+        Text(
+            TEXT_STATUS("PIP INSTALL SHMGR_DUMMY_LIB......."),
+            style="bold #004e00",
+        )
+    ):
+        popen = sp.Popen(
+            f"python -m pip install -e {this_dir}/data/shmgr_dummy_lib",
+            shell=True,
+        )
+        popen.communicate()
+        ec = popen.returncode
+        assert ec == 0, "Failed to install 'dummy' shell library."
+
     result = read_text("shmgr_dummy_lib.data.dummy", "latest.sh")
-    return result
+
+    yield result
+
+    with console.status(
+        Text(
+            TEXT_STATUS("PIP UNINSTALL SHMGR_DUMMY_LIB......."),
+            style="bold #ff9500",
+        )
+    ):
+        ec = os.system("python -m pip uninstall -y shmgr_dummy_lib")
+        assert ec == 0, "Failed to uninstall 'dummy' shell library."
 
 
 def test_first_load(

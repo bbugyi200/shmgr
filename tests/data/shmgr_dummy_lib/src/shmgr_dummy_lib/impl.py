@@ -2,13 +2,13 @@
 
 from typing import Tuple
 
-from shmgr.plugin import hookimpl
+# from shmgr.plugin import hookimpl
 
 
 VERSION = "3.0.0"
 
 
-@hookimpl
+# @hookimpl
 def register_shell_libs() -> Tuple[str, str, Tuple[int, int, int]]:
     """We register the dummy shell library using this hook implementation."""
     major, minor, patch = [int(v) for v in VERSION.split(".")]
