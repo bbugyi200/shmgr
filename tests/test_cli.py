@@ -8,10 +8,10 @@ from textwrap import dedent
 from typing import Iterator
 
 from _pytest.capture import CaptureFixture
+from bugyi.lib.types import Final
 from pytest import fixture
 from rich.console import Console
 from rich.text import Text
-from typing_extensions import Final
 
 from shmgr import cli
 
