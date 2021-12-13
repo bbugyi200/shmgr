@@ -61,19 +61,6 @@ def dummy_lib_setup() -> Iterator[str]:
 
     yield result
 
-    with console.status(
-        Text(
-            TEXT_STATUS("PIP UNINSTALL SHMGR_DUMMY_LIB......."),
-            style="bold #ff9500",
-        )
-    ):
-        popen = sp.Popen(
-            "python -m pip uninstall -y shmgr_dummy_lib", shell=True
-        )
-        popen.communicate()
-        ec = popen.returncode
-        assert ec == 0, "Failed to uninstall 'dummy' shell library."
-
 
 def test_first_load(
     dummy_lib_contents: str, cache_dir: Path, capsys: CaptureFixture
