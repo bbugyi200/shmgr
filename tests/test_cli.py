@@ -15,8 +15,9 @@ from rich.text import Text
 from shmgr import cli
 
 
-CACHE_DIR_ENVVAR = "SHMGR_CACHE_DIR"
 console = Console(stderr=True)
+
+CACHE_DIR_ENVVAR = "SHMGR_CACHE_DIR"
 
 
 @fixture(name="cache_dir")
