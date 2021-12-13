@@ -2,6 +2,7 @@
 pytest
 pytest-cov
 pytest-mock
+rich ~= 10.16
 syrupy
 tox
 tox-pyenv
