@@ -98,7 +98,7 @@ function version_gte() {
     local V2="$1"
     shift
 
-    # If V1 is the same as V2...
+    # If V1 is equal to V2...
     if [[ "${V1}" == "${V2}" ]]; then
         return 0
     fi
