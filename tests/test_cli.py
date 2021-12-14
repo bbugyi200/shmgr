@@ -1,5 +1,7 @@
 """Integration tests for the `shmgr` tool."""
 
+from __future__ import annotations
+
 from importlib.resources import read_text
 import os
 from pathlib import Path
